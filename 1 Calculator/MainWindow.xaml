@@ -1,0 +1,225 @@
+﻿<Window x:Class="_1_Calculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_1_Calculator"
+        xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
+        mc:Ignorable="d"
+        x:Name="main"
+        
+        Title="Calculator" Background="#000000" Width="470" Height="619" ResizeMode="NoResize" Icon="calculations.png" KeyDown="Window_KeyDown" WindowStartupLocation="CenterScreen">
+    <Window.CommandBindings>
+        <CommandBinding Command="Copy" Executed="Copy_Executed"/>
+        <CommandBinding Command="Save" CanExecute="Save_CanExecute" Executed="Save_Executed"/>
+    </Window.CommandBindings>
+    <Window.Resources>
+
+        <Style TargetType="Button">
+            <Setter Property="MinHeight" Value="50"/>
+            <Setter Property="MinWidth" Value="50"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="3, 3, 3, 3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border Name="backgroundElement"  BorderThickness="0" CornerRadius="25" Background="{TemplateBinding Background}"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}"
+                                          TextElement.FontSize="{TemplateBinding FontSize}"
+                                          TextElement.FontFamily="{TemplateBinding FontFamily}">
+                            </ContentPresenter>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="backgroundElement" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="Click" Handler="Button_Click"/>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button" x:Key="orangeButton">
+            <Setter Property="Background" Value="#FE9E09"/>
+            <Setter Property="BorderBrush" Value="#FBC78E"/>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button" x:Key="darkGreyButton">
+            <Setter Property="Background" Value="#343434"/>
+            <Setter Property="BorderBrush" Value="#737373"/>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button" x:Key="greyButton">
+            <Setter Property="Background" Value="#a5a5a5"/>
+            <Setter Property="BorderBrush" Value="#D9D9D7"/>
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button" x:Key="blueButton">
+            <Setter Property="Background" Value="#4285F4"/>
+            <Setter Property="BorderBrush" Value="#95b6ed"/>
+        </Style>
+
+
+        <Style TargetType="{x:Type RadioButton}">
+            <EventSetter Event="Checked" Handler="RadioButton_Checked"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border  Margin="10 10 10 10" BorderThickness="3" Background="#ffffff" CornerRadius="25">
+                            <Border.BorderBrush>
+                                <SolidColorBrush x:Name="borderBrush"/>
+                            </Border.BorderBrush>
+                            <ContentPresenter Name="contentElement" HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                          TextElement.FontSize="{TemplateBinding FontSize}"
+                                          TextElement.FontFamily="{TemplateBinding FontFamily}">
+                                <TextElement.Foreground>
+                                    <SolidColorBrush x:Name="contentColor"/>
+                                </TextElement.Foreground>
+                            </ContentPresenter>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Checked">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="borderBrush" Storyboard.TargetProperty="Color"
+                                                            To="#14a324" Duration="0:0:0"/>
+                                            <ColorAnimation Storyboard.TargetName="contentColor" Storyboard.TargetProperty="Color"
+                                                            To="#14a324" Duration="0:0:0"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState Name="Unchecked">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="borderBrush" Storyboard.TargetProperty="Color"
+                                                            To="#a6f5b0" Duration="0:0:0"/>
+                                            <ColorAnimation Storyboard.TargetName="contentColor" Storyboard.TargetProperty="Color"
+                                                            To="#a6f5b0" Duration="0:0:0"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+
+
+
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" MinHeight="19" Background="#343434" BorderThickness="0">
+            <MenuItem Header="History" Foreground="White">
+                <MenuItem Header="Save" Command = "Save" Margin="0" Foreground="Black" MaxHeight="19">
+                    <MenuItem.CommandBindings>
+                        <CommandBinding Command="Save" CanExecute="Save_CanExecute" Executed="Save_Executed"/>
+                    </MenuItem.CommandBindings>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <Grid Margin="5, 5, 5, 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="6" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Border BorderBrush="#a5a5a5" Grid.Row="0" Grid.RowSpan="2" BorderThickness="3" CornerRadius="25"/>
+                <TextBlock x:Name="tbOut" FontSize="60" Foreground="White" Margin="20 0 20 20" Grid.Row="1" Text="{Binding Path=(local:Calculator.InputBuffer)}" TextAlignment="Right">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Command="Copy">
+                                <MenuItem.CommandBindings>
+                                    <CommandBinding Command="Copy" Executed="Copy_Executed"/>
+                                </MenuItem.CommandBindings>
+                            </MenuItem>
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
+                <TextBlock FontSize="20" Foreground="#A5A5A5" Margin="27 20 27 0" Grid.Row="0" Text="{Binding Path=(local:Calculator.OutputBuffer)}" TextAlignment="Right"/>
+            </Grid>
+
+            <Grid  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="3">
+                <Border BorderThickness="0" CornerRadius="25" Background="#5ccc69"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton Grid.Column="0" IsChecked="True" Content="DEG"/>
+                    <RadioButton Grid.Column="1" Content="RAD"/>
+                </Grid>
+            </Grid>
+
+
+
+            <Button Grid.Column="0" Grid.Row="2" Style="{StaticResource blueButton}" Content="sin"/>
+            <Button Grid.Column="0" Grid.Row="3" Style="{StaticResource blueButton}" Content="cos"/>
+            <Button Grid.Column="0" Grid.Row="4" Style="{StaticResource blueButton}" Content="tan"/>
+            <Button Grid.Column="0" Grid.Row="5" Style="{StaticResource blueButton}" Content="π"/>
+
+            <Button Grid.Column="1" Grid.Row="2" Style="{StaticResource blueButton}" Content="&#x00b1;"/>
+            <Button Grid.Column="1" Grid.Row="3" Style="{StaticResource blueButton}" Content="&#x221A;"/>
+            <Button Grid.Column="1" Grid.Row="4" Style="{StaticResource blueButton}" Content="x&#x00b2;"/>
+            <Button Grid.Column="1" Grid.Row="5" Style="{StaticResource blueButton}" Content="n!"/>
+
+            <Button Grid.Column="2" Grid.Row="1" Style="{StaticResource greyButton}" Content="&#x27f5;"/>
+            <Button Grid.Column="2" Grid.Row="2" Style="{StaticResource darkGreyButton}" Content="7"/>
+            <Button Grid.Column="2" Grid.Row="3" Style="{StaticResource darkGreyButton}" Content="4"/>
+            <Button Grid.Column="2" Grid.Row="4" Style="{StaticResource darkGreyButton}" Content="1"/>
+            <Button Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" Style="{StaticResource darkGreyButton}" Content="0"/>
+
+            <Button Grid.Column="3" Grid.Row="1" Style="{StaticResource greyButton}" Content="CE"/>
+            <Button Grid.Column="3" Grid.Row="2" Style="{StaticResource darkGreyButton}" Content="8"/>
+            <Button Grid.Column="3" Grid.Row="3" Style="{StaticResource darkGreyButton}" Content="5"/>
+            <Button Grid.Column="3" Grid.Row="4" Style="{StaticResource darkGreyButton}" Content="2"/>
+
+            <Button Grid.Column="4" Grid.Row="1" Style="{StaticResource greyButton}" Content="C"/>
+            <Button Grid.Column="4" Grid.Row="2" Style="{StaticResource darkGreyButton}" Content="9"/>
+            <Button Grid.Column="4" Grid.Row="3" Style="{StaticResource darkGreyButton}" Content="6"/>
+            <Button Grid.Column="4" Grid.Row="4" Style="{StaticResource darkGreyButton}" Content="3"/>
+            <Button Grid.Column="4" Grid.Row="5" Style="{StaticResource darkGreyButton}" Content="."/>
+
+            <Button Grid.Column="5" Grid.Row="1" Content="=" IsDefault="True" Style="{StaticResource orangeButton}"/>
+            <Button Grid.Column="5" Grid.Row="2" Content="/" Style="{StaticResource orangeButton}"/>
+            <Button Grid.Column="5" Grid.Row="3" Content="*" Style="{StaticResource orangeButton}"/>
+            <Button Grid.Column="5" Grid.Row="4" Content="-" Style="{StaticResource orangeButton}"/>
+            <Button Grid.Column="5" Grid.Row="5" Content="+" Style="{StaticResource orangeButton}"/>
+
+
+        </Grid>
+    </DockPanel>
+</Window>
